@@ -1,0 +1,19 @@
+name: PlayerKitsPlus
+version: '1.0.0'
+main: me.zombieman.playerkitsplus.PlayerKitsPlus
+api-version: '1.13'
+commands:
+  createkit:
+    permission: playerkitsplus.command.createkit
+  deletekit:
+    permission: playerkitsplus.command.deletekit
+  kit:
+    permission: playerkitsplus.command.kit
+
+permissions:
+  playerkitsplus.command.createkit:
+    default: op
+  playerkitsplus.command.deletekit:
+    default: op
+  playerkitsplus.command.kit:
+    default: op
