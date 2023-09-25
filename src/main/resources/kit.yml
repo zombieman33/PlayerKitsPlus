@@ -2,7 +2,7 @@
 # Cooldowns are in seconds.
 
 kits:
-  - "default"
+  - default
 kit:
   default:
     items:
@@ -15,4 +15,5 @@ kit:
       - ==: org.bukkit.inventory.ItemStack
         v: 3465
         type: STONE_AXE
+    offhand: []
     cooldown: 0
