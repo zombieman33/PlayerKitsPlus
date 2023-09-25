@@ -3,6 +3,7 @@ package me.zombieman.playerkitsplus.commands;
 import me.zombieman.playerkitsplus.PlayerKitsPlus;
 import me.zombieman.playerkitsplus.manager.KitManager;
 import me.zombieman.playerkitsplus.utils.SoundUtil;
+import me.zombieman.playerkitsplus.utils.TimerUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -15,9 +16,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KitCmd implements CommandExecutor, TabCompleter {
+public class ChangeTimerCmd implements CommandExecutor, TabCompleter {
     private final PlayerKitsPlus plugin;
-    public KitCmd(PlayerKitsPlus plugin) {
+    public ChangeTimerCmd(PlayerKitsPlus plugin) {
         this.plugin = plugin;
     }
 
@@ -37,20 +38,37 @@ public class KitCmd implements CommandExecutor, TabCompleter {
                 return false;
             }
 
-            if (!player.hasPermission("playerkitsplus.command.kit." + kitName)) {
-                player.sendMessage(ChatColor.RED + "You don't have permission to use this kit.");
+            if (args.length != 2) {
+                player.sendMessage(ChatColor.RED + "You need to specify a time for this kit.");
                 return false;
             }
 
-            if (player.hasPermission("playerkitsplus.cooldown.bypass")) {
-                KitManager.givePlayerKit(player, kitName, false, plugin);
+            String timeStr = args[1];
+
+            int time = 0;
+
+            try {
+                time = Integer.parseInt(timeStr);
+            } catch (NumberFormatException e) {
+                player.sendMessage(ChatColor.RED + "'%s' is not a valid number.".formatted(timeStr));
                 return false;
             }
 
-            KitManager.givePlayerKit(player, kitName, true, plugin);
+            if (time < 0) {
+                player.sendMessage(ChatColor.RED +  "The timer can't be below 0.");
+                return false;
+            }
+
+            int oldTimer = plugin.getKitConfig().getInt("kit." + kitName + ".cooldown");
+
+            TimerUtils.changeTimer(kitName, oldTimer, time, plugin);
+
+            player.sendMessage(ChatColor.AQUA + "SUCCESSFULLY CHANGED THE TIMER OF THE %s KIT".formatted(kitName));
+            player.sendMessage(ChatColor.GREEN + "New timer: %s".formatted(TimerUtils.formatRemainingTime(time * 1000L)));
+            player.sendMessage(ChatColor.YELLOW + "Old timer: %s".formatted(TimerUtils.formatRemainingTime(oldTimer * 1000L)));
 
         } else {
-            player.sendMessage(ChatColor.YELLOW + "/kit <kit>");
+            player.sendMessage(ChatColor.YELLOW + "/changetimer <kit> <int>");
             SoundUtil.sound(player, Sound.ENTITY_VILLAGER_TRADE);
         }
         return true;
@@ -61,14 +79,13 @@ public class KitCmd implements CommandExecutor, TabCompleter {
 
         Player player = (Player) sender;
 
-        if (args.length == 1) {
-            if (player.hasPermission("playerkitsplus.command.kit")) {
+        if (player.hasPermission("playerkitsplus.command.changetimer")) {
+            if (args.length == 1) {
                 List<String> kits = plugin.getKitConfig().getStringList("kits");
-                for (String kit : kits) {
-                    if (player.hasPermission("playerkitsplus.command.kit." + kit)) {
-                        completions.add(kit);
-                    }
-                }
+                completions.addAll(kits);
+            }
+            if (args.length == 2) {
+                completions.add("<time in seconds>");
             }
         }
         return completions;

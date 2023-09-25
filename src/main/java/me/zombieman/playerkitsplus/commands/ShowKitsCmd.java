@@ -1,6 +1,7 @@
 package me.zombieman.playerkitsplus.commands;
 
 import me.zombieman.playerkitsplus.PlayerKitsPlus;
+import me.zombieman.playerkitsplus.manager.GuiManager;
 import me.zombieman.playerkitsplus.manager.KitManager;
 import me.zombieman.playerkitsplus.utils.SoundUtil;
 import org.bukkit.ChatColor;
@@ -15,9 +16,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeleteKitCmd implements CommandExecutor, TabCompleter {
-    private final PlayerKitsPlus plugin;
-    public DeleteKitCmd(PlayerKitsPlus plugin) {
+public class ShowKitsCmd implements CommandExecutor, TabCompleter {
+    private PlayerKitsPlus plugin;
+
+    public ShowKitsCmd(PlayerKitsPlus plugin) {
         this.plugin = plugin;
     }
 
@@ -33,19 +35,19 @@ public class DeleteKitCmd implements CommandExecutor, TabCompleter {
             String kitName = args[0];
             if (!KitManager.checkKit(kitName, plugin)) {
                 player.sendMessage(ChatColor.RED + "%s is not a valid kit.".formatted(kitName));
+                SoundUtil.sound(player, Sound.ENTITY_VILLAGER_NO);
                 return false;
             }
-            KitManager.removeKit(kitName, plugin);
-            plugin.saveKitConfig();
-            player.sendMessage(ChatColor.GREEN + "Successfully deleted a kit called '%s'".formatted(kitName));
+
+            GuiManager.openKitGUI(player, kitName, plugin);
 
         } else {
-            player.sendMessage(ChatColor.YELLOW + "/deletekit <kit>");
+            player.sendMessage(ChatColor.YELLOW + "/showkit <kit>");
             SoundUtil.sound(player, Sound.ENTITY_VILLAGER_TRADE);
         }
+
         return true;
     }
-
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> completions = new ArrayList<>();
@@ -53,8 +55,13 @@ public class DeleteKitCmd implements CommandExecutor, TabCompleter {
         Player player = (Player) sender;
 
         if (args.length == 1) {
-            if (player.hasPermission("playerkitsplus.command.deletekit")) {
-                completions.addAll(plugin.getKitConfig().getStringList("kits"));
+            if (player.hasPermission("playerkitsplus.command.showkit")) {
+                List<String> kits = plugin.getKitConfig().getStringList("kits");
+                for (String kit : kits) {
+                    if (player.hasPermission("playerkitsplus.command.showkit." + kit)) {
+                        completions.add(kit);
+                    }
+                }
             }
         }
         return completions;

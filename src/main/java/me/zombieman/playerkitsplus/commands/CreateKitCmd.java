@@ -2,10 +2,12 @@ package me.zombieman.playerkitsplus.commands;
 
 import me.zombieman.playerkitsplus.PlayerKitsPlus;
 import me.zombieman.playerkitsplus.manager.KitManager;
+import me.zombieman.playerkitsplus.utils.SoundUtil;
 import me.zombieman.playerkitsplus.utils.TimerUtils;
 import net.md_5.bungee.api.chat.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -66,6 +68,7 @@ public class CreateKitCmd implements CommandExecutor, TabCompleter {
 
         } else {
             player.sendMessage(ChatColor.YELLOW + "/createkit <kit>");
+            SoundUtil.sound(player, Sound.ENTITY_VILLAGER_TRADE);
         }
         return true;
     }

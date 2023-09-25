@@ -5,22 +5,25 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 public class ArmorManager {
 
-    public static boolean isArmor(ItemStack item) {
-        Material itemType = item.getType();
-        return itemType == Material.LEATHER_HELMET || itemType == Material.CHAINMAIL_HELMET ||
-                itemType == Material.IRON_HELMET || itemType == Material.DIAMOND_HELMET ||
-                itemType == Material.NETHERITE_HELMET || itemType == Material.LEATHER_CHESTPLATE ||
-                itemType == Material.CHAINMAIL_CHESTPLATE || itemType == Material.IRON_CHESTPLATE ||
-                itemType == Material.DIAMOND_CHESTPLATE || itemType == Material.NETHERITE_CHESTPLATE ||
-                itemType == Material.LEATHER_LEGGINGS || itemType == Material.CHAINMAIL_LEGGINGS ||
-                itemType == Material.IRON_LEGGINGS || itemType == Material.DIAMOND_LEGGINGS ||
-                itemType == Material.NETHERITE_LEGGINGS || itemType == Material.LEATHER_BOOTS ||
-                itemType == Material.CHAINMAIL_BOOTS || itemType == Material.IRON_BOOTS ||
-                itemType == Material.DIAMOND_BOOTS || itemType == Material.NETHERITE_BOOTS;
-    }
+    private static final Set<Material> ARMOR_MATERIALS = new HashSet<>(Arrays.asList(
+            Material.LEATHER_HELMET, Material.CHAINMAIL_HELMET, Material.IRON_HELMET,
+            Material.DIAMOND_HELMET, Material.NETHERITE_HELMET, Material.LEATHER_CHESTPLATE,
+            Material.CHAINMAIL_CHESTPLATE, Material.IRON_CHESTPLATE, Material.DIAMOND_CHESTPLATE,
+            Material.NETHERITE_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.CHAINMAIL_LEGGINGS,
+            Material.IRON_LEGGINGS, Material.DIAMOND_LEGGINGS, Material.NETHERITE_LEGGINGS,
+            Material.LEATHER_BOOTS, Material.CHAINMAIL_BOOTS, Material.IRON_BOOTS,
+            Material.DIAMOND_BOOTS, Material.NETHERITE_BOOTS
+    ));
 
+    public static boolean isArmor(ItemStack item) {
+        return ARMOR_MATERIALS.contains(item.getType());
+    }
     public static void equipArmor(Player player, ItemStack item) {
         EquipmentSlot slot = getArmorSlot(item);
         ItemStack currentArmor = player.getInventory().getItem(slot);

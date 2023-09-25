@@ -1,5 +1,5 @@
 name: PlayerKitsPlus
-version: '1.0.0'
+version: '2.0.0'
 main: me.zombieman.playerkitsplus.PlayerKitsPlus
 api-version: '1.13'
 commands:
@@ -9,6 +9,12 @@ commands:
     permission: playerkitsplus.command.deletekit
   kit:
     permission: playerkitsplus.command.kit
+  showkit:
+    permission: playerkitsplus.command.showkit
+  resetcooldown:
+    permission: playerkitsplus.command.resetcooldown
+  changetimer:
+    permission: playerkitsplus.command.changetimer
 
 permissions:
   playerkitsplus.command.createkit:
@@ -16,4 +22,10 @@ permissions:
   playerkitsplus.command.deletekit:
     default: op
   playerkitsplus.command.kit:
+    default: op
+  playerkitsplus.command.showkit:
+    default: op
+  playerkitsplus.command.resetcooldown:
+    default: op
+  playerkitsplus.command.changetimer:
     default: op

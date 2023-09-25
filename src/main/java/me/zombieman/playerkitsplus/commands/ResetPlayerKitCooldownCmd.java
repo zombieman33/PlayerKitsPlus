@@ -3,6 +3,8 @@ package me.zombieman.playerkitsplus.commands;
 import me.zombieman.playerkitsplus.PlayerKitsPlus;
 import me.zombieman.playerkitsplus.manager.KitManager;
 import me.zombieman.playerkitsplus.utils.SoundUtil;
+import me.zombieman.playerkitsplus.utils.TimerUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -15,9 +17,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KitCmd implements CommandExecutor, TabCompleter {
+public class ResetPlayerKitCooldownCmd implements CommandExecutor, TabCompleter {
     private final PlayerKitsPlus plugin;
-    public KitCmd(PlayerKitsPlus plugin) {
+    public ResetPlayerKitCooldownCmd(PlayerKitsPlus plugin) {
         this.plugin = plugin;
     }
 
@@ -37,20 +39,26 @@ public class KitCmd implements CommandExecutor, TabCompleter {
                 return false;
             }
 
-            if (!player.hasPermission("playerkitsplus.command.kit." + kitName)) {
-                player.sendMessage(ChatColor.RED + "You don't have permission to use this kit.");
-                return false;
-            }
+            if (args.length >= 2) {
+                String targetName = args[1];
+                Player target = Bukkit.getPlayerExact(targetName);
 
-            if (player.hasPermission("playerkitsplus.cooldown.bypass")) {
-                KitManager.givePlayerKit(player, kitName, false, plugin);
-                return false;
-            }
+                if (target == null) {
+                    player.sendMessage(ChatColor.RED + "This player doesn't exist.");
+                    return false;
+                }
 
-            KitManager.givePlayerKit(player, kitName, true, plugin);
+                TimerUtils.removeCooldown(player, kitName);
+                player.sendMessage(ChatColor.GREEN + "You successfully reset %s's %s kit cooldown.".formatted(targetName, kitName));
+                player.sendMessage(ChatColor.GREEN + "Your %s kit got reset!".formatted(kitName));
+
+            } else {
+                player.sendMessage(ChatColor.YELLOW + "/resetkitcooldown <kit> <player>");
+                SoundUtil.sound(player, Sound.ENTITY_VILLAGER_TRADE);
+            }
 
         } else {
-            player.sendMessage(ChatColor.YELLOW + "/kit <kit>");
+            player.sendMessage(ChatColor.YELLOW + "/resetkitcooldown <kit> <player>");
             SoundUtil.sound(player, Sound.ENTITY_VILLAGER_TRADE);
         }
         return true;
@@ -61,13 +69,16 @@ public class KitCmd implements CommandExecutor, TabCompleter {
 
         Player player = (Player) sender;
 
-        if (args.length == 1) {
-            if (player.hasPermission("playerkitsplus.command.kit")) {
+        if (player.hasPermission("playerkitsplus.command.resetcooldown")) {
+            if (args.length == 1) {
                 List<String> kits = plugin.getKitConfig().getStringList("kits");
                 for (String kit : kits) {
-                    if (player.hasPermission("playerkitsplus.command.kit." + kit)) {
-                        completions.add(kit);
-                    }
+                    completions.add(kit);
+                }
+            }
+            if (args.length == 2) {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    completions.add(p.getName());
                 }
             }
         }
