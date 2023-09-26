@@ -14,7 +14,9 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ChangeTimerCmd implements CommandExecutor, TabCompleter {
     private final PlayerKitsPlus plugin;
@@ -85,13 +87,15 @@ public class ChangeTimerCmd implements CommandExecutor, TabCompleter {
 
         if (player.hasPermission("playerkitsplus.command.changetimer")) {
             if (args.length == 1) {
-                List<String> kits = plugin.getKitConfig().getStringList("kits");
+                Collection<String> kits = KitManager.getKitNames(plugin);
                 completions.addAll(kits);
             }
             if (args.length == 2) {
                 completions.add("<time in seconds>");
             }
         }
-        return completions;
+
+        String lastArg = args[args.length - 1];
+        return completions.stream().filter(s -> s.startsWith(lastArg)).collect(Collectors.toList());
     }
 }

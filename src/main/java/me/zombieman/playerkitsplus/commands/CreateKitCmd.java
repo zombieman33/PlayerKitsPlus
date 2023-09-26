@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class CreateKitCmd implements CommandExecutor, TabCompleter {
     private final PlayerKitsPlus plugin;
@@ -88,6 +89,8 @@ public class CreateKitCmd implements CommandExecutor, TabCompleter {
                 completions.add("<time in seconds>");
             }
         }
-        return completions;
+
+        String lastArg = args[args.length - 1];
+        return completions.stream().filter(s -> s.startsWith(lastArg)).collect(Collectors.toList());
     }
 }

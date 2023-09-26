@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DeleteKitCmd implements CommandExecutor, TabCompleter {
     private final PlayerKitsPlus plugin;
@@ -56,9 +57,11 @@ public class DeleteKitCmd implements CommandExecutor, TabCompleter {
 
         if (args.length == 1) {
             if (player.hasPermission("playerkitsplus.command.deletekit")) {
-                completions.addAll(plugin.getKitConfig().getStringList("kits"));
+                completions.addAll(KitManager.getKitNames(plugin));
             }
         }
-        return completions;
+
+        String lastArg = args[args.length - 1];
+        return completions.stream().filter(s -> s.startsWith(lastArg)).collect(Collectors.toList());
     }
 }
