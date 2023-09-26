@@ -25,16 +25,18 @@ public class ChangeTimerCmd implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
 
-        if (!(sender instanceof Player player)) {
+        if (!(sender instanceof Player)) {
             sender.sendMessage("Only a player can run this command.");
             return true;
         }
+
+        Player player = (Player) sender;
 
         if (args.length >= 1) {
             String kitName = args[0];
 
             if (!KitManager.checkKit(kitName, plugin)) {
-                player.sendMessage(ChatColor.RED + "'%s' is not a valid kit.".formatted(kitName));
+                player.sendMessage(ChatColor.RED + String.format("'%s' is not a valid kit.", kitName));
                 return false;
             }
 
@@ -50,7 +52,7 @@ public class ChangeTimerCmd implements CommandExecutor, TabCompleter {
             try {
                 time = Integer.parseInt(timeStr);
             } catch (NumberFormatException e) {
-                player.sendMessage(ChatColor.RED + "'%s' is not a valid number.".formatted(timeStr));
+                player.sendMessage(ChatColor.RED + String.format("'%s' is not a valid number.", timeStr));
                 SoundUtil.sound(player, Sound.ENTITY_VILLAGER_NO);
                 return false;
             }
@@ -65,9 +67,9 @@ public class ChangeTimerCmd implements CommandExecutor, TabCompleter {
 
             TimerUtils.changeTimer(kitName, oldTimer, time, plugin);
 
-            player.sendMessage(ChatColor.AQUA + "SUCCESSFULLY CHANGED THE TIMER OF THE %s KIT".formatted(kitName));
-            player.sendMessage(ChatColor.GREEN + "New timer: %s".formatted(TimerUtils.formatRemainingTime(time * 1000L)));
-            player.sendMessage(ChatColor.YELLOW + "Old timer: %s".formatted(TimerUtils.formatRemainingTime(oldTimer * 1000L)));
+            player.sendMessage(ChatColor.AQUA + String.format("SUCCESSFULLY CHANGED THE TIMER OF THE %s KIT", kitName));
+            player.sendMessage(ChatColor.GREEN + String.format("New timer: %s", TimerUtils.formatRemainingTime(time * 1000L)));
+            player.sendMessage(ChatColor.YELLOW + String.format("Old timer: %s", TimerUtils.formatRemainingTime(oldTimer * 1000L)));
 
         } else {
             player.sendMessage(ChatColor.YELLOW + "/changetimer <kit> <int>");

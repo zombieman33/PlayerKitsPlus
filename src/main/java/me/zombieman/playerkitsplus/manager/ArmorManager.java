@@ -24,6 +24,7 @@ public class ArmorManager {
     public static boolean isArmor(ItemStack item) {
         return ARMOR_MATERIALS.contains(item.getType());
     }
+
     public static void equipArmor(Player player, ItemStack item) {
         EquipmentSlot slot = getArmorSlot(item);
         ItemStack currentArmor = player.getInventory().getItem(slot);
@@ -37,17 +38,36 @@ public class ArmorManager {
 
     public static EquipmentSlot getArmorSlot(ItemStack item) {
         Material itemType = item.getType();
+
         switch (itemType) {
-            case LEATHER_HELMET, CHAINMAIL_HELMET, IRON_HELMET, DIAMOND_HELMET, NETHERITE_HELMET:
+            case LEATHER_HELMET:
+            case CHAINMAIL_HELMET:
+            case IRON_HELMET:
+            case DIAMOND_HELMET:
+            case NETHERITE_HELMET:
                 return EquipmentSlot.HEAD;
-            case LEATHER_CHESTPLATE, CHAINMAIL_CHESTPLATE, IRON_CHESTPLATE, DIAMOND_CHESTPLATE, NETHERITE_CHESTPLATE, ELYTRA:
+            case LEATHER_CHESTPLATE:
+            case CHAINMAIL_CHESTPLATE:
+            case IRON_CHESTPLATE:
+            case DIAMOND_CHESTPLATE:
+            case NETHERITE_CHESTPLATE:
+            case ELYTRA:
                 return EquipmentSlot.CHEST;
-            case LEATHER_LEGGINGS, CHAINMAIL_LEGGINGS, IRON_LEGGINGS, DIAMOND_LEGGINGS, NETHERITE_LEGGINGS:
+            case LEATHER_LEGGINGS:
+            case CHAINMAIL_LEGGINGS:
+            case IRON_LEGGINGS:
+            case DIAMOND_LEGGINGS:
+            case NETHERITE_LEGGINGS:
                 return EquipmentSlot.LEGS;
-            case LEATHER_BOOTS, CHAINMAIL_BOOTS, IRON_BOOTS, DIAMOND_BOOTS, NETHERITE_BOOTS:
+            case LEATHER_BOOTS:
+            case CHAINMAIL_BOOTS:
+            case IRON_BOOTS:
+            case DIAMOND_BOOTS:
+            case NETHERITE_BOOTS:
                 return EquipmentSlot.FEET;
             default:
                 return null;
         }
     }
+
 }

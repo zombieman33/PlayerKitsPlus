@@ -29,16 +29,18 @@ public class CreateKitCmd implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
 
-        if (!(sender instanceof Player player)) {
+        if (!(sender instanceof Player)) {
             sender.sendMessage("Only a player can run this command.");
             return true;
         }
+
+        Player player = (Player) sender;
 
         if (args.length >= 1) {
 
             String kitName = args[0];
             if (KitManager.checkKit(kitName, plugin)) {
-                player.sendMessage(ChatColor.RED + "%s is already a kit.".formatted(kitName));
+                player.sendMessage(ChatColor.RED + String.format("%s is already a kit.", kitName));
                 return false;
             }
 
@@ -53,7 +55,7 @@ public class CreateKitCmd implements CommandExecutor, TabCompleter {
             try {
                 time = Integer.parseInt(timeStr);
             } catch (NumberFormatException e) {
-                player.sendMessage(ChatColor.RED + "'%s' is not a valid number.".formatted(timeStr));
+                player.sendMessage(ChatColor.RED + String.format("'%s' is not a valid number.", timeStr));
                 return false;
             }
 
@@ -64,8 +66,8 @@ public class CreateKitCmd implements CommandExecutor, TabCompleter {
             }
 
             KitManager.savePlayerInventory(player, kitName, time, plugin);
-            player.sendMessage(ChatColor.GREEN + "Created a new kit called '%s'".formatted(kitName));
-            player.sendMessage(ChatColor.GREEN + "Timer %s".formatted(TimerUtils.formatRemainingTime(time * 1000L)));
+            player.sendMessage(ChatColor.GREEN + String.format("Created a new kit called '%s'", kitName));
+            player.sendMessage(ChatColor.GREEN + String.format("Timer %s", TimerUtils.formatRemainingTime(time * 1000L)));
 
         } else {
             player.sendMessage(ChatColor.YELLOW + "/createkit <kit>");

@@ -18,7 +18,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import java.util.*;
 
 public class GuiListener implements Listener {
+
     private PlayerKitsPlus plugin;
+
     public GuiListener(PlayerKitsPlus plugin) {
         this.plugin = plugin;
     }
@@ -45,7 +47,7 @@ public class GuiListener implements Listener {
 
             if (!player.hasPermission("playerkitsplus.command.kit." + kit)) return;
 
-            KitManager.givePlayerKit(player, kit, true, plugin);
+            KitManager.givePlayerKit(plugin, player, kit, true);
 
         } else if (slot == GuiManager.DELETE_KIT_SLOT) {
             if (!player.hasPermission("playerkitsplus.command.deletekit")) return;
@@ -98,11 +100,11 @@ public class GuiListener implements Listener {
             GuiManager.removePlayerFromDeleteGui(player);
             deleteKit.remove(player.getUniqueId());
             SoundUtil.sound(player, Sound.ENTITY_VILLAGER_TRADE);
-            player.sendActionBar(ChatColor.GREEN + "You canceled this action.");
+            player.sendActionBar(ChatColor.GREEN + "You cancelled this action."); // L
         } else if (slot == GuiManager.CONFIRM_DELETE) {
             String kit = deleteKit.get(player.getUniqueId());
-            player.sendMessage(ChatColor.GREEN + "You successfully deleted %s kit!".formatted(kit));
-            player.sendActionBar(ChatColor.GREEN + "You successfully deleted %s kit!".formatted(kit));
+            player.sendMessage(ChatColor.GREEN + String.format("You successfully deleted %s kit!", kit));
+            player.sendActionBar(ChatColor.GREEN + String.format("You successfully deleted %s kit!", kit));
             SoundUtil.sound(player, Sound.ENTITY_VILLAGER_HURT);
             KitManager.removeKit(kit, plugin);
             player.closeInventory();
@@ -117,9 +119,7 @@ public class GuiListener implements Listener {
             GuiManager.removePlayerFromKit(player);
             GuiManager.removeKit(player);
         }
-
-
-        if (GuiManager.checkIfPlayerIsInDeleteGui(player)) {
+        else if (GuiManager.checkIfPlayerIsInDeleteGui(player)) {
             GuiManager.removePlayerFromDeleteGui(player);
         }
     }
@@ -132,8 +132,7 @@ public class GuiListener implements Listener {
             GuiManager.removePlayerFromKit(player);
             GuiManager.removeKit(player);
         }
-
-        if (GuiManager.checkIfPlayerIsInDeleteGui(player)) {
+        else if (GuiManager.checkIfPlayerIsInDeleteGui(player)) {
             GuiManager.removePlayerFromDeleteGui(player);
         }
 
@@ -173,13 +172,13 @@ public class GuiListener implements Listener {
 
             TimerUtils.changeTimer(kitName, oldTimer, intValue, plugin);
 
-            player.sendMessage(ChatColor.AQUA + "SUCCESSFULLY CHANGED THE TIMER OF THE %s KIT".formatted(kitName));
-            player.sendMessage(ChatColor.GREEN + "New timer: %s".formatted(TimerUtils.formatRemainingTime(intValue * 1000L)));
-            player.sendMessage(ChatColor.YELLOW + "Old timer: %s".formatted(TimerUtils.formatRemainingTime(oldTimer * 1000L)));
+            player.sendMessage(ChatColor.AQUA + String.format("SUCCESSFULLY CHANGED THE TIMER OF THE %s KIT", kitName));
+            player.sendMessage(ChatColor.GREEN + String.format("New timer: %s", TimerUtils.formatRemainingTime(intValue * 1000L)));
+            player.sendMessage(ChatColor.YELLOW + String.format("Old timer: %s", TimerUtils.formatRemainingTime(oldTimer * 1000L)));
 
         } catch (NumberFormatException e) {
 
-            player.sendMessage(ChatColor.RED + "Error: This '%s' is not a integer, please try to change the timer again.".formatted(message));
+            player.sendMessage(ChatColor.RED + String.format("Error: This '%s' is not a integer, please try to change the timer again.", message));
 
         }
 

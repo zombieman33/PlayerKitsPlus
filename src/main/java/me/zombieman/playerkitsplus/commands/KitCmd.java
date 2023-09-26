@@ -24,16 +24,18 @@ public class KitCmd implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
 
-        if (!(sender instanceof Player player)) {
+        if (!(sender instanceof Player)) {
             sender.sendMessage("Only a player can run this command.");
             return true;
         }
+
+        Player player = (Player) sender;
 
         if (args.length >= 1) {
             String kitName = args[0];
 
             if (!KitManager.checkKit(kitName, plugin)) {
-                player.sendMessage(ChatColor.RED + "'%s' is not a valid kit.".formatted(kitName));
+                player.sendMessage(ChatColor.RED + String.format("'%s' is not a valid kit.", kitName));
                 return false;
             }
 
@@ -43,11 +45,11 @@ public class KitCmd implements CommandExecutor, TabCompleter {
             }
 
             if (player.hasPermission("playerkitsplus.cooldown.bypass")) {
-                KitManager.givePlayerKit(player, kitName, false, plugin);
+                KitManager.givePlayerKit(plugin, player, kitName, false);
                 return false;
             }
 
-            KitManager.givePlayerKit(player, kitName, true, plugin);
+            KitManager.givePlayerKit(plugin, player, kitName, true);
 
         } else {
             player.sendMessage(ChatColor.YELLOW + "/kit <kit>");

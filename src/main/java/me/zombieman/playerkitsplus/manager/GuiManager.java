@@ -41,6 +41,7 @@ public class GuiManager {
 
         if (offhandItems == null || offhandItems.isEmpty()) {
             if (kitItems == null || kitItems.isEmpty()) {
+                // noinspection deprecation
                 player.sendMessage(ChatColor.RED + "There aren't any items in this kit!");
                 SoundUtil.sound(player, Sound.ENTITY_VILLAGER_NO);
                 return;
@@ -48,6 +49,7 @@ public class GuiManager {
         }
 
         int guiSize = 6;
+        // noinspection deprecation
         Inventory kitInventory = Bukkit.createInventory(player, guiSize * 9, kitName + " Kit");
 
         ItemStack[] items = kitItems.toArray(new ItemStack[0]);
@@ -120,8 +122,8 @@ public class GuiManager {
             }
         }
 
-        ItemStack[] offhands = offhandItems.toArray(new ItemStack[0]);
-        for (ItemStack item : offhands) {
+        ItemStack[] offHands = offhandItems.toArray(new ItemStack[0]);
+        for (ItemStack item : offHands) {
             if (item != null && !item.getType().equals(Material.AIR)) {
                 kitInventory.setItem(OFFHAND_SLOT, item);
             }
@@ -129,7 +131,7 @@ public class GuiManager {
 
 
 
-        long cooldownTime = TimerUtils.getCooldown(player, kitName);
+        long cooldownTime = TimerUtils.getCooldown(plugin, player, kitName);
         long currentTime = System.currentTimeMillis();
         long remainingTimeMillis = cooldownTime - currentTime;
         String remainingTimeFormatted = TimerUtils.formatRemainingTime(remainingTimeMillis);
@@ -138,7 +140,7 @@ public class GuiManager {
             if (currentTime > cooldownTime) {
                 kitInventory.setItem(CLAIM_KIT_SLOT, ItemUtil.createItem(new ItemStack(Material.LIME_CONCRETE), "<green>Click to claim the: <bold>" + kitName + "</bold> kit.", true, "<white>Ready to claim"));
             } else {
-                kitInventory.setItem(CLAIM_KIT_SLOT, ItemUtil.createItem(new ItemStack(Material.YELLOW_CONCRETE), "<green>Click to claim the: <bold>" + kitName + "</bold> kit.", true, "<white>Cooldown: %s".formatted((remainingTimeFormatted))));
+                kitInventory.setItem(CLAIM_KIT_SLOT, ItemUtil.createItem(new ItemStack(Material.YELLOW_CONCRETE), "<green>Click to claim the: <bold>" + kitName + "</bold> kit.", true, String.format("<white>Cooldown: %s", remainingTimeFormatted)));
             }
         } else {
             kitInventory.setItem(CLAIM_KIT_SLOT, ItemUtil.createItem(new ItemStack(Material.BARRIER), "<red>Exit", true));
@@ -157,8 +159,6 @@ public class GuiManager {
             kitInventory.setItem(CHANGE_TIMER_SLOT, ItemUtil.createItem(new ItemStack(Material.DARK_OAK_SIGN), "<green>Click to change the timer for the " + kitName + " kit.", true, "<white>Current timer: " + TimerUtils.formatRemainingTime(cooldown * 1000L)));
         }
 
-
-
         setKit(player, kitName);
 
         SoundUtil.sound(player, Sound.ENTITY_ITEM_PICKUP);
@@ -167,18 +167,12 @@ public class GuiManager {
     }
 
     public static String getKit(Player player) {
-
-        String kit = kits.get(player.getUniqueId());
-
-        return kit;
+        return kits.get(player.getUniqueId());
     }
 
     public static void setKit(Player player, String kit) {
-
         if (kits.containsKey(player.getUniqueId())) return;
-
         kits.put(player.getUniqueId(), kit);
-
     }
 
     public static void removeKit(Player player) {
@@ -198,7 +192,6 @@ public class GuiManager {
 
     public static void removePlayerFromKit(Player player) {
         String uuid = player.getUniqueId().toString();
-
         if (!opened.contains(uuid)) return;
 
         opened.remove(uuid);
@@ -206,25 +199,20 @@ public class GuiManager {
 
     public static boolean checkIfPlayerIsInKit(Player player) {
         String uuid = player.getUniqueId().toString();
-
-        if (opened.contains(uuid)) return true;
-
-        return false;
+        return opened.contains(uuid);
     }
 
     public static void removePlayerFromDeleteGui(Player player) {
         if (!deleteGuiOpened.contains(player.getUniqueId().toString())) return;
-
         deleteGuiOpened.remove(player.getUniqueId().toString());
     }
 
     public static boolean checkIfPlayerIsInDeleteGui(Player player) {
-        if (deleteGuiOpened.contains(player.getUniqueId().toString())) return true;
-
-        return false;
+        return deleteGuiOpened.contains(player.getUniqueId().toString());
     }
 
     public static void openConfirmGui(Player player, String kit) {
+        // noinspection deprecation
         Inventory conformationInv = Bukkit.createInventory(player, 3 * 9, kit + " Delete Conformation");
 
         for (int i = 0; i < conformationInv.getSize(); i++) {
@@ -232,7 +220,7 @@ public class GuiManager {
         }
 
         conformationInv.setItem(DENY_DELETE, ItemUtil.createItem(new ItemStack(Material.RED_CONCRETE), "<red>Cancel", true));
-        conformationInv.setItem(CONFIRM_DELETE, ItemUtil.createItem(new ItemStack(Material.GREEN_CONCRETE), "<green>Approve", true, "<white>If you press this button you", "<white>will permanently delete the %s kit.".formatted(kit)));
+        conformationInv.setItem(CONFIRM_DELETE, ItemUtil.createItem(new ItemStack(Material.GREEN_CONCRETE), "<green>Approve", true, "<white>If you press this button you", String.format("<white>will permanently delete the %s kit.", kit)));
 
         deleteGuiOpened.add(player.getUniqueId().toString());
 

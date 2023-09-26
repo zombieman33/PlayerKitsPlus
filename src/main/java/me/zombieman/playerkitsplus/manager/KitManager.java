@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.*;
 
 public class KitManager {
+
     public static boolean checkKit(String kit, PlayerKitsPlus plugin) {
         List<String> kits = plugin.getKitConfig().getStringList("kits");
         if (kits.contains(kit)) return true;
@@ -67,13 +68,13 @@ public class KitManager {
         plugin.saveKitConfig();
     }
 
-    public static void givePlayerKit(Player player, String kitName, boolean cooldown, PlayerKitsPlus plugin) {
+    public static void givePlayerKit(PlayerKitsPlus plugin, Player player, String kitName, boolean cooldown) {
         FileConfiguration kitConfig = plugin.getKitConfig();
         if (!kitConfig.contains("kit." + kitName + ".items")) return;
 
         if (cooldown) {
-            if (TimerUtils.hasCooldown(player, kitName)) {
-                long cooldownTime = TimerUtils.getCooldown(player, kitName);
+            if (TimerUtils.hasCooldown(plugin, player, kitName)) {
+                long cooldownTime = TimerUtils.getCooldown(plugin, player, kitName);
                 long currentTime = System.currentTimeMillis();
 
                 if (currentTime < cooldownTime) {
@@ -91,7 +92,7 @@ public class KitManager {
         if (offhandList == null || offhandList.isEmpty()) {
             if (itemList == null || itemList.isEmpty()) {
                 SoundUtil.sound(player, Sound.ENTITY_VILLAGER_NO);
-                player.sendMessage(ChatColor.RED + "'%s' doesn't have any items in it.".formatted(kitName));
+                player.sendMessage(ChatColor.RED + String.format("'%s' doesn't have any items in it.", kitName));
                 return;
             }
         }
@@ -142,7 +143,7 @@ public class KitManager {
         SoundUtil.sound(player, Sound.ENTITY_ENDER_DRAGON_FLAP);
 
         if (cooldown) {
-            TimerUtils.setCooldown(player, kitName, TimerUtils.getKitCooldownInSeconds(kitConfig, kitName));
+            TimerUtils.setCooldown(plugin, player, kitName, TimerUtils.getKitCooldownInSeconds(kitConfig, kitName));
         }
     }
 }
