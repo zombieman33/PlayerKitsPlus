@@ -15,7 +15,9 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ResetPlayerKitCooldownCmd implements CommandExecutor, TabCompleter {
     private final PlayerKitsPlus plugin;
@@ -73,10 +75,8 @@ public class ResetPlayerKitCooldownCmd implements CommandExecutor, TabCompleter 
 
         if (player.hasPermission("playerkitsplus.command.resetcooldown")) {
             if (args.length == 1) {
-                List<String> kits = plugin.getKitConfig().getStringList("kits");
-                for (String kit : kits) {
-                    completions.add(kit);
-                }
+                Collection<String> kits = KitManager.getKitNames(plugin);
+                completions.addAll(kits);
             }
             if (args.length == 2) {
                 for (Player p : Bukkit.getOnlinePlayers()) {
@@ -84,6 +84,8 @@ public class ResetPlayerKitCooldownCmd implements CommandExecutor, TabCompleter 
                 }
             }
         }
-        return completions;
+
+        String lastArg = args[args.length - 1];
+        return completions.stream().filter(s -> s.startsWith(lastArg)).collect(Collectors.toList());
     }
 }

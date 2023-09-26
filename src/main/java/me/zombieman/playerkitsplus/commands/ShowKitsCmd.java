@@ -14,7 +14,9 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ShowKitsCmd implements CommandExecutor, TabCompleter {
     private PlayerKitsPlus plugin;
@@ -58,7 +60,7 @@ public class ShowKitsCmd implements CommandExecutor, TabCompleter {
 
         if (args.length == 1) {
             if (player.hasPermission("playerkitsplus.command.showkit")) {
-                List<String> kits = plugin.getKitConfig().getStringList("kits");
+                Collection<String> kits = KitManager.getKitNames(plugin);
                 for (String kit : kits) {
                     if (player.hasPermission("playerkitsplus.command.showkit." + kit)) {
                         completions.add(kit);
@@ -66,6 +68,8 @@ public class ShowKitsCmd implements CommandExecutor, TabCompleter {
                 }
             }
         }
-        return completions;
+
+        String lastArg = args[args.length - 1];
+        return completions.stream().filter(s -> s.startsWith(lastArg)).collect(Collectors.toList());
     }
 }
