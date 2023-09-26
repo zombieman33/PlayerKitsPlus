@@ -26,16 +26,18 @@ public class ResetPlayerKitCooldownCmd implements CommandExecutor, TabCompleter 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
 
-        if (!(sender instanceof Player player)) {
+        if (!(sender instanceof Player)) {
             sender.sendMessage("Only a player can run this command.");
             return true;
         }
+
+        Player player = (Player) sender;
 
         if (args.length >= 1) {
             String kitName = args[0];
 
             if (!KitManager.checkKit(kitName, plugin)) {
-                player.sendMessage(ChatColor.RED + "'%s' is not a valid kit.".formatted(kitName));
+                player.sendMessage(ChatColor.RED + String.format("'%s' is not a valid kit.", kitName));
                 return false;
             }
 
@@ -48,9 +50,9 @@ public class ResetPlayerKitCooldownCmd implements CommandExecutor, TabCompleter 
                     return false;
                 }
 
-                TimerUtils.removeCooldown(player, kitName);
-                player.sendMessage(ChatColor.GREEN + "You successfully reset %s's %s kit cooldown.".formatted(targetName, kitName));
-                player.sendMessage(ChatColor.GREEN + "Your %s kit got reset!".formatted(kitName));
+                TimerUtils.removeCooldown(plugin, player, kitName);
+                player.sendMessage(ChatColor.GREEN + String.format("You successfully reset %s's %s kit cooldown.", targetName, kitName));
+                player.sendMessage(ChatColor.GREEN + String.format("Your %s kit got reset!", kitName));
 
             } else {
                 player.sendMessage(ChatColor.YELLOW + "/resetkitcooldown <kit> <player>");
