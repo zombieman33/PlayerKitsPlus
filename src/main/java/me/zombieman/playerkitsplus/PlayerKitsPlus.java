@@ -6,14 +6,13 @@ import me.zombieman.playerkitsplus.listeners.JoinListener;
 import me.zombieman.playerkitsplus.manager.ArmorManager;
 import me.zombieman.playerkitsplus.manager.GuiManager;
 import me.zombieman.playerkitsplus.manager.KitManager;
-import me.zombieman.playerkitsplus.manager.PlayerData;
+import me.zombieman.playerkitsplus.manager.PlayerDataManager;
 import me.zombieman.playerkitsplus.utils.ItemUtil;
 import me.zombieman.playerkitsplus.utils.SoundUtil;
 import me.zombieman.playerkitsplus.utils.TimerUtils;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -46,11 +45,8 @@ public final class PlayerKitsPlus extends JavaPlugin {
         if (!this.kitDataFile.exists()) this.saveResource(kitConfigFileName, false);
         this.kitConfig = YamlConfiguration.loadConfiguration(this.kitDataFile);
 
-
-        File playerDataFolder = new File(getDataFolder(), "playerData");
-        if (!playerDataFolder.exists()) {
-            playerDataFolder.mkdirs();
-        }
+        // Player data folder setup
+        PlayerDataManager.initDataFolder(this);
 
         // Commands
         PluginCommand plCreateKitCmd = this.getCommand("createkit");
@@ -81,7 +77,7 @@ public final class PlayerKitsPlus extends JavaPlugin {
         new KitManager();
         new ArmorManager();
         new GuiManager();
-        new PlayerData();
+        new PlayerDataManager();
 
         // Utils
         new TimerUtils();
