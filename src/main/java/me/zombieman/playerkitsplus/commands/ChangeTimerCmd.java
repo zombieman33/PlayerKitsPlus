@@ -51,11 +51,13 @@ public class ChangeTimerCmd implements CommandExecutor, TabCompleter {
                 time = Integer.parseInt(timeStr);
             } catch (NumberFormatException e) {
                 player.sendMessage(ChatColor.RED + "'%s' is not a valid number.".formatted(timeStr));
+                SoundUtil.sound(player, Sound.ENTITY_VILLAGER_NO);
                 return false;
             }
 
             if (time < 0) {
                 player.sendMessage(ChatColor.RED +  "The timer can't be below 0.");
+                SoundUtil.sound(player, Sound.ENTITY_VILLAGER_NO);
                 return false;
             }
 

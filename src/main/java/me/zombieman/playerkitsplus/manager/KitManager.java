@@ -28,17 +28,21 @@ public class KitManager {
         ItemStack[] inventoryContents = player.getInventory().getContents();
         List<ItemStack> validItems = new ArrayList<>();
 
-        for (ItemStack item : inventoryContents) {
-            if (item != null && !item.getType().isAir()) {
-                validItems.add(item);
-            }
-        }
-
         List<ItemStack> offhandItems = new ArrayList<>();
         ItemStack offhandItem = player.getInventory().getItemInOffHand();
         if (!offhandItem.getType().isAir()) {
             offhandItems.add(offhandItem);
         }
+
+        for (ItemStack item : inventoryContents) {
+            if (item != null && !item.getType().isAir()) {
+                validItems.add(item);
+            }
+            if (!offhandItems.isEmpty()) {
+                validItems.remove(offhandItem);
+            }
+        }
+
 
 
         List<String> kits = plugin.getKitConfig().getStringList("kits");
@@ -82,10 +86,14 @@ public class KitManager {
         }
 
         List<?> itemList = kitConfig.getList("kit." + kitName + ".items");
-        if (itemList.isEmpty()) {
-            SoundUtil.sound(player, Sound.ENTITY_VILLAGER_NO);
-            player.sendMessage(ChatColor.RED + "'%s' doesn't have any items in it.".formatted(kitName));
-            return;
+        List<?> offhandList = kitConfig.getList("kit." + kitName + ".offhand");
+
+        if (offhandList == null || offhandList.isEmpty()) {
+            if (itemList == null || itemList.isEmpty()) {
+                SoundUtil.sound(player, Sound.ENTITY_VILLAGER_NO);
+                player.sendMessage(ChatColor.RED + "'%s' doesn't have any items in it.".formatted(kitName));
+                return;
+            }
         }
 
         ItemStack[] items = itemList.toArray(new ItemStack[0]);

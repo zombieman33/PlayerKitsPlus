@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -38,10 +39,12 @@ public class GuiManager {
         List<?> kitItems = plugin.getKitConfig().getList("kit." + kitName + ".items");
         List<?> offhandItems = plugin.getKitConfig().getList("kit." + kitName + ".offhand");
 
-        if (kitItems.isEmpty()) {
-            player.sendMessage(ChatColor.RED + "There aren't any items in this kit!");
-            SoundUtil.sound(player, Sound.ENTITY_VILLAGER_NO);
-            return;
+        if (offhandItems == null || offhandItems.isEmpty()) {
+            if (kitItems == null || kitItems.isEmpty()) {
+                player.sendMessage(ChatColor.RED + "There aren't any items in this kit!");
+                SoundUtil.sound(player, Sound.ENTITY_VILLAGER_NO);
+                return;
+            }
         }
 
         int guiSize = 6;
@@ -50,7 +53,27 @@ public class GuiManager {
         ItemStack[] items = kitItems.toArray(new ItemStack[0]);
         for (ItemStack item : items) {
             if (item != null && !item.getType().equals(Material.AIR)) {
-                kitInventory.addItem(item);
+                if (ArmorManager.isArmor(item)) {
+                    EquipmentSlot slot = ArmorManager.getArmorSlot(item);
+                    switch (slot) {
+                        case HEAD:
+                            kitInventory.setItem(HELMET_SLOT, item);
+                            break;
+                        case CHEST:
+                            kitInventory.setItem(CHESTPLATE_SLOT, item);
+                            break;
+                        case LEGS:
+                            kitInventory.setItem(LEGGINGS_SLOT, item);
+                            break;
+                        case FEET:
+                            kitInventory.setItem(BOOTS_SLOT, item);
+                            break;
+                        default:
+                            break;
+                    }
+                } else {
+                    kitInventory.addItem(item);
+                }
             }
         }
 

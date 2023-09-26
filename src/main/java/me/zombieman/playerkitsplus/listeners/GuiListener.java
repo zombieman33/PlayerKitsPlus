@@ -158,6 +158,15 @@ public class GuiListener implements Listener {
         try {
             int intValue = Integer.parseInt(message);
 
+
+            if (intValue < 0) {
+                player.sendMessage(ChatColor.RED +  "The timer can't be below 0.");
+                SoundUtil.sound(player, Sound.ENTITY_VILLAGER_NO);
+                changeTimer.remove(player.getUniqueId());
+                kit.remove(player.getUniqueId());
+                return;
+            }
+
             String kitName = kit.get(player.getUniqueId());
 
             int oldTimer = plugin.getKitConfig().getInt("kit." + kitName + ".cooldown");

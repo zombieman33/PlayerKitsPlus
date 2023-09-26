@@ -59,6 +59,7 @@ public class CreateKitCmd implements CommandExecutor, TabCompleter {
 
             if (time < 0) {
                 player.sendMessage(ChatColor.RED +  "The timer can't be below 0.");
+                SoundUtil.sound(player, Sound.ENTITY_VILLAGER_NO);
                 return false;
             }
 

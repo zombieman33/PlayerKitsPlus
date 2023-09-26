@@ -12,7 +12,7 @@ import java.util.Set;
 public class ArmorManager {
 
     private static final Set<Material> ARMOR_MATERIALS = new HashSet<>(Arrays.asList(
-            Material.LEATHER_HELMET, Material.CHAINMAIL_HELMET, Material.IRON_HELMET,
+            Material.ELYTRA, Material.LEATHER_HELMET, Material.CHAINMAIL_HELMET, Material.IRON_HELMET,
             Material.DIAMOND_HELMET, Material.NETHERITE_HELMET, Material.LEATHER_CHESTPLATE,
             Material.CHAINMAIL_CHESTPLATE, Material.IRON_CHESTPLATE, Material.DIAMOND_CHESTPLATE,
             Material.NETHERITE_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.CHAINMAIL_LEGGINGS,
@@ -40,7 +40,7 @@ public class ArmorManager {
         switch (itemType) {
             case LEATHER_HELMET, CHAINMAIL_HELMET, IRON_HELMET, DIAMOND_HELMET, NETHERITE_HELMET:
                 return EquipmentSlot.HEAD;
-            case LEATHER_CHESTPLATE, CHAINMAIL_CHESTPLATE, IRON_CHESTPLATE, DIAMOND_CHESTPLATE, NETHERITE_CHESTPLATE:
+            case LEATHER_CHESTPLATE, CHAINMAIL_CHESTPLATE, IRON_CHESTPLATE, DIAMOND_CHESTPLATE, NETHERITE_CHESTPLATE, ELYTRA:
                 return EquipmentSlot.CHEST;
             case LEATHER_LEGGINGS, CHAINMAIL_LEGGINGS, IRON_LEGGINGS, DIAMOND_LEGGINGS, NETHERITE_LEGGINGS:
                 return EquipmentSlot.LEGS;
