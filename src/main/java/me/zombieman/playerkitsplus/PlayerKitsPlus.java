@@ -30,10 +30,13 @@ public final class PlayerKitsPlus extends JavaPlugin {
     private ShowKitsCmd showKidCmd;
     private ResetPlayerKitCooldownCmd resetPlayerKitCooldownCmd;
     private ChangeTimerCmd changeTimerCmd;
+    private SetKitCmd setKitCmd;
 
     // Listeners
     private JoinListener joinListener;
     private GuiListener guiListener;
+
+    public static final boolean DEBUGMODE = false;
 
     @Override
     public void onEnable() {
@@ -72,6 +75,10 @@ public final class PlayerKitsPlus extends JavaPlugin {
         PluginCommand plChangeTimerCmd = this.getCommand("changetimer");
         this.changeTimerCmd = new ChangeTimerCmd(this);
         if (plChangeTimerCmd != null) plChangeTimerCmd.setExecutor(this.changeTimerCmd);
+
+        PluginCommand plSetKitCmd = this.getCommand("setkit");
+        this.setKitCmd = new SetKitCmd(this);
+        if (plSetKitCmd != null) plSetKitCmd.setExecutor(this.setKitCmd);
 
         // Managers
         new KitManager();

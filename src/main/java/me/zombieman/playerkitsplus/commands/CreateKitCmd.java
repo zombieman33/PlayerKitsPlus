@@ -4,8 +4,6 @@ import me.zombieman.playerkitsplus.PlayerKitsPlus;
 import me.zombieman.playerkitsplus.manager.KitManager;
 import me.zombieman.playerkitsplus.utils.SoundUtil;
 import me.zombieman.playerkitsplus.utils.TimerUtils;
-import net.md_5.bungee.api.chat.*;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -16,9 +14,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class CreateKitCmd implements CommandExecutor, TabCompleter {
@@ -67,6 +63,9 @@ public class CreateKitCmd implements CommandExecutor, TabCompleter {
             }
 
             KitManager.savePlayerInventory(player, kitName, time, plugin);
+
+            if (player.getInventory().isEmpty()) return false;
+
             player.sendMessage(ChatColor.GREEN + String.format("Created a new kit called '%s'", kitName));
             player.sendMessage(ChatColor.GREEN + String.format("Timer %s", TimerUtils.formatRemainingTime(time * 1000L)));
 

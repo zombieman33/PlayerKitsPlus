@@ -1,8 +1,6 @@
 # Please don't change any formatting if you want the plugin to work. Thank you :D
 # Cooldowns are in seconds.
 
-kits:
-  - default
 kit:
   default:
     items:

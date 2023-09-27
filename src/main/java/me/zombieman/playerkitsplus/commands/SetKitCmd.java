@@ -17,9 +17,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class KitCmd implements CommandExecutor, TabCompleter {
+public class SetKitCmd implements CommandExecutor, TabCompleter {
     private final PlayerKitsPlus plugin;
-    public KitCmd(PlayerKitsPlus plugin) {
+    public SetKitCmd(PlayerKitsPlus plugin) {
         this.plugin = plugin;
     }
 
@@ -41,18 +41,7 @@ public class KitCmd implements CommandExecutor, TabCompleter {
                 return false;
             }
 
-            if (!player.hasPermission("playerkitsplus.command.kit." + kitName)) {
-                player.sendMessage(ChatColor.RED + "You don't have permission to use this kit.");
-                return false;
-            }
-
-            if (player.hasPermission("playerkitsplus.cooldown.bypass")) {
-                KitManager.givePlayerKit(plugin, player, kitName, false);
-                player.sendMessage(ChatColor.GREEN + "You are bypassing cooldown due to permissions.");
-                return false;
-            }
-
-            KitManager.givePlayerKit(plugin, player, kitName, true);
+            KitManager.setKit(plugin, kitName, player);
 
         } else {
             player.sendMessage(ChatColor.YELLOW + "/kit <kit>");

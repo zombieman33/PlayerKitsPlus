@@ -1,2 +1,4 @@
+background: BLACK_STAINED_GLASS_PANE
+
 shouldSpawnWithKit: true
 starterKit: "default"

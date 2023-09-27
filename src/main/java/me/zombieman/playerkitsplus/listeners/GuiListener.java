@@ -47,7 +47,14 @@ public class GuiListener implements Listener {
 
             if (!player.hasPermission("playerkitsplus.command.kit." + kit)) return;
 
-            KitManager.givePlayerKit(plugin, player, kit, true);
+            boolean cooldown = true;
+
+            if (player.hasPermission("playerkitsplus.cooldown.bypass")) {
+                cooldown = false;
+                player.sendMessage(ChatColor.GREEN + "You are bypassing cooldown due to permissions.");
+            }
+
+            KitManager.givePlayerKit(plugin, player, kit, cooldown);
 
         } else if (slot == GuiManager.DELETE_KIT_SLOT) {
             if (!player.hasPermission("playerkitsplus.command.deletekit")) return;
@@ -58,7 +65,7 @@ public class GuiListener implements Listener {
 
             deleteKit.put(player.getUniqueId(), kit);
 
-            GuiManager.openConfirmGui(player, kit);
+            GuiManager.openConfirmGui(plugin, player, kit);
 
         } else if (slot == GuiManager.CHANGE_TIMER_SLOT) {
             if (!player.hasPermission("playerkitsplus.command.changetimer")) return;

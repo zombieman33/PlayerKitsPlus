@@ -36,100 +36,63 @@ public class GuiManager {
     private static final Map<UUID, String> kits = new HashMap<>();
 
     public static void openKitGUI(Player player, String kitName, PlayerKitsPlus plugin) {
-        List<?> kitItems = plugin.getKitConfig().getList("kit." + kitName + ".items");
-        List<?> offhandItems = plugin.getKitConfig().getList("kit." + kitName + ".offhand");
+        plugin.reloadKitConfig();
+        List<ItemStack> kitItems = (List<ItemStack>) plugin.getKitConfig().getList("kit." + kitName + ".items");
 
-        if (offhandItems == null || offhandItems.isEmpty()) {
-            if (kitItems == null || kitItems.isEmpty()) {
-                // noinspection deprecation
-                player.sendMessage(ChatColor.RED + "There aren't any items in this kit!");
-                SoundUtil.sound(player, Sound.ENTITY_VILLAGER_NO);
-                return;
-            }
+        if (kitItems == null || kitItems.isEmpty()) {
+            // noinspection deprecation
+            player.sendMessage(ChatColor.RED + "There aren't any items in this kit!");
+            SoundUtil.sound(player, Sound.ENTITY_VILLAGER_NO);
+            return;
         }
 
         int guiSize = 6;
         // noinspection deprecation
         Inventory kitInventory = Bukkit.createInventory(player, guiSize * 9, kitName + " Kit");
 
-        ItemStack[] items = kitItems.toArray(new ItemStack[0]);
-        for (ItemStack item : items) {
-            if (item != null && !item.getType().equals(Material.AIR)) {
-                if (ArmorManager.isArmor(item)) {
-                    EquipmentSlot slot = ArmorManager.getArmorSlot(item);
-                    switch (slot) {
-                        case HEAD:
-                            kitInventory.setItem(HELMET_SLOT, item);
-                            break;
-                        case CHEST:
-                            kitInventory.setItem(CHESTPLATE_SLOT, item);
-                            break;
-                        case LEGS:
-                            kitInventory.setItem(LEGGINGS_SLOT, item);
-                            break;
-                        case FEET:
-                            kitInventory.setItem(BOOTS_SLOT, item);
-                            break;
-                        default:
-                            break;
-                    }
-                } else {
-                    kitInventory.addItem(item);
-                }
+        int start = 36;
+        int end = 39; // Inclusive
+
+        int slot;
+
+        for (int i = 0; i < kitItems.size(); i++) {
+            slot = i;
+            if (i >= start && i <= end) {
+                slot = (slot - end) * (-1) + start;
             }
+            kitInventory.setItem(slot, kitItems.get(i));
+        }
+
+        Material backgroundMaterial = Material.BLACK_STAINED_GLASS_PANE;
+
+        String backgroundName = plugin.getConfig().getString("background");
+
+        if (backgroundName != null) {
+            backgroundMaterial = Material.valueOf(backgroundName);
         }
 
         for (int i = 0; i < kitInventory.getSize(); i++) {
             ItemStack item = kitInventory.getItem(i);
-            if (item == null || item.getType() == Material.AIR) {
-                kitInventory.setItem(i, ItemUtil.createItem(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), "Slot " + i, false));
+            if (item == null || item.getType().equals(Material.AIR)) {
+                if (i <= 35) {
+                    kitInventory.setItem(i, ItemUtil.createItem(new ItemStack(backgroundMaterial), "Slot " + i, false));
+                } else if (i == 36){
+                    kitInventory.setItem(i, ItemUtil.createItem(new ItemStack(backgroundMaterial), "Helmet Slot", false));
+                } else if (i == 37){
+                    kitInventory.setItem(i, ItemUtil.createItem(new ItemStack(backgroundMaterial), "Chestplate Slot", false));
+                } else if (i == 38){
+                    kitInventory.setItem(i, ItemUtil.createItem(new ItemStack(backgroundMaterial), "Leggings Slot", false));
+                } else if (i == 39){
+                    kitInventory.setItem(i, ItemUtil.createItem(new ItemStack(backgroundMaterial), "Boots Slot", false));
+                } else if (i == 40){
+                    kitInventory.setItem(i, ItemUtil.createItem(new ItemStack(backgroundMaterial), "Offhand Slot", false));
+                } else {
+                    kitInventory.setItem(i, ItemUtil.createItem(new ItemStack(backgroundMaterial), " ", false));
+                }
             }
         }
 
-        // Just to make sure that we don't have any more slots than the inventory itself.
-        for (int i = 41; i < kitInventory.getSize(); i++) {
-            ItemStack item = kitInventory.getItem(i);
-            if (item != null && item.getType() == Material.BLACK_STAINED_GLASS_PANE) {
-                kitInventory.setItem(i, ItemUtil.createItem(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), " ", false));
-            }
-        }
-
-        ItemStack helmet = kitInventory.getItem(HELMET_SLOT);
-        ItemStack chestplate = kitInventory.getItem(CHESTPLATE_SLOT);
-        ItemStack leggings = kitInventory.getItem(LEGGINGS_SLOT);
-        ItemStack boots = kitInventory.getItem(BOOTS_SLOT);
-        ItemStack offhand = kitInventory.getItem(OFFHAND_SLOT);
-
-        if (helmet != null && !ArmorManager.isArmor(helmet)) {
-            kitInventory.setItem(HELMET_SLOT, ItemUtil.createItem(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), "Helmet Slot", false));
-        }
-
-        if (chestplate != null && !ArmorManager.isArmor(chestplate)) {
-            kitInventory.setItem(CHESTPLATE_SLOT, ItemUtil.createItem(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), "Chestplate Slot", false));
-        }
-
-        if (leggings != null && !ArmorManager.isArmor(leggings)) {
-            kitInventory.setItem(LEGGINGS_SLOT, ItemUtil.createItem(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), "Leggings Slot", false));
-        }
-
-        if (boots != null && !ArmorManager.isArmor(boots)) {
-            kitInventory.setItem(BOOTS_SLOT, ItemUtil.createItem(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), "Boots Slot", false));
-        }
-
-        if (offhand != null) {
-            if (!offhand.getType().equals(Material.GRAY_STAINED_GLASS_PANE)) {
-                kitInventory.setItem(OFFHAND_SLOT, ItemUtil.createItem(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), "Offhand Slot", false));
-            }
-        }
-
-        ItemStack[] offHands = offhandItems.toArray(new ItemStack[0]);
-        for (ItemStack item : offHands) {
-            if (item != null && !item.getType().equals(Material.AIR)) {
-                kitInventory.setItem(OFFHAND_SLOT, item);
-            }
-        }
-
-
+        // Everything under here will work.
 
         long cooldownTime = TimerUtils.getCooldown(plugin, player, kitName);
         long currentTime = System.currentTimeMillis();
@@ -165,6 +128,149 @@ public class GuiManager {
         player.openInventory(kitInventory);
         savePlayerToKit(player);
     }
+
+//    public static void openKitGUI(Player player, String kitName, PlayerKitsPlus plugin) {
+//        List<?> kitItems = plugin.getKitConfig().getList("kit." + kitName + ".items");
+//        List<?> offhandItems = plugin.getKitConfig().getList("kit." + kitName + ".offhand");
+//
+//        if (offhandItems == null || offhandItems.isEmpty()) {
+//            if (kitItems == null || kitItems.isEmpty()) {
+//                // noinspection deprecation
+//                player.sendMessage(ChatColor.RED + "There aren't any items in this kit!");
+//                SoundUtil.sound(player, Sound.ENTITY_VILLAGER_NO);
+//                return;
+//            }
+//        }
+//
+//        int guiSize = 6;
+//        // noinspection deprecation
+//        Inventory kitInventory = Bukkit.createInventory(player, guiSize * 9, kitName + " Kit");
+//
+//        ItemStack[] items = kitItems.toArray(new ItemStack[0]);
+//        for (ItemStack item : items) {
+//            if (item != null && !item.getType().equals(Material.AIR)) {
+//                if (ArmorManager.isArmor(item)) {
+//                    EquipmentSlot slot = ArmorManager.getArmorSlot(item);
+//
+//                    switch (slot) {
+//                        case HEAD:
+//                            kitInventory.setItem(HELMET_SLOT, item);
+//                            break;
+//                        case CHEST:
+//                            kitInventory.setItem(CHESTPLATE_SLOT, item);
+//                            break;
+//                        case LEGS:
+//                            kitInventory.setItem(LEGGINGS_SLOT, item);
+//                            break;
+//                        case FEET:
+//                            kitInventory.setItem(BOOTS_SLOT, item);
+//                            break;
+//                        default:
+//                            break;
+//                    }
+//                } else {
+//                    List<ItemStack> itemList = (List<ItemStack>) plugin.getKitConfig().getList("kit." + kitName + ".items");
+//                    if (itemList == null) return;
+//
+//                    for (int i = 0; i < itemList.size(); i++) {
+//                        ItemStack currItem = kitInventory.getItem(i);
+//                        if (currItem == null || currItem.getType() == Material.AIR || currItem.getType() == Material.BLACK_STAINED_GLASS_PANE) {
+//                            kitInventory.setItem(i, itemList.get(i));
+////                            kitInventory.setItem(i + 1, ItemUtil.createItem(new ItemStack(Material.YELLOW_STAINED_GLASS_PANE), "Slot " + i, true));
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        for (int i = 0; i < kitInventory.getSize(); i++) {
+//            ItemStack item = kitInventory.getItem(i);
+//            if (item == null || item.getType() == Material.AIR) {
+//                kitInventory.setItem(i, ItemUtil.createItem(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), "Slot " + i, false));
+//            }
+//        }
+//
+//        // Just to make sure that we don't have any more slots than the inventory itself.
+//        for (int i = 41; i < kitInventory.getSize(); i++) {
+//            ItemStack item = kitInventory.getItem(i);
+//            if (item != null && item.getType() == Material.BLACK_STAINED_GLASS_PANE) {
+//                kitInventory.setItem(i, ItemUtil.createItem(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), " ", false));
+//            }
+//        }
+//
+//        ItemStack helmet = kitInventory.getItem(HELMET_SLOT);
+//        ItemStack chestplate = kitInventory.getItem(CHESTPLATE_SLOT);
+//        ItemStack leggings = kitInventory.getItem(LEGGINGS_SLOT);
+//        ItemStack boots = kitInventory.getItem(BOOTS_SLOT);
+//        ItemStack offhand = kitInventory.getItem(OFFHAND_SLOT);
+//
+//        if (helmet != null && !ArmorManager.isArmor(helmet)) {
+//            kitInventory.setItem(HELMET_SLOT, ItemUtil.createItem(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), "Helmet Slot", false));
+//        }
+//
+//        if (chestplate != null && !ArmorManager.isArmor(chestplate)) {
+//            kitInventory.setItem(CHESTPLATE_SLOT, ItemUtil.createItem(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), "Chestplate Slot", false));
+//        }
+//
+//        if (leggings != null && !ArmorManager.isArmor(leggings)) {
+//            kitInventory.setItem(LEGGINGS_SLOT, ItemUtil.createItem(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), "Leggings Slot", false));
+//        }
+//
+//        if (boots != null && !ArmorManager.isArmor(boots)) {
+//            kitInventory.setItem(BOOTS_SLOT, ItemUtil.createItem(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), "Boots Slot", false));
+//        }
+//
+//        if (offhand != null) {
+//            if (!offhand.getType().equals(Material.BLACK_STAINED_GLASS_PANE)) {
+//                kitInventory.setItem(OFFHAND_SLOT, ItemUtil.createItem(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), "Offhand Slot", false));
+//            }
+//        }
+//
+//        if (offhandItems != null) {
+//            ItemStack[] offHands = offhandItems.toArray(new ItemStack[0]);
+//            for (ItemStack item : offHands) {
+//                if (item != null && !item.getType().equals(Material.AIR)) {
+//                    kitInventory.setItem(OFFHAND_SLOT, item);
+//                }
+//            }
+//        }
+//
+//
+//
+//        long cooldownTime = TimerUtils.getCooldown(plugin, player, kitName);
+//        long currentTime = System.currentTimeMillis();
+//        long remainingTimeMillis = cooldownTime - currentTime;
+//        String remainingTimeFormatted = TimerUtils.formatRemainingTime(remainingTimeMillis);
+//
+//        if (player.hasPermission("playerkitsplus.command.kit." + kitName)) {
+//            if (currentTime > cooldownTime) {
+//                kitInventory.setItem(CLAIM_KIT_SLOT, ItemUtil.createItem(new ItemStack(Material.LIME_CONCRETE), "<green>Click to claim the: <bold>" + kitName + "</bold> kit.", true, "<white>Ready to claim"));
+//            } else {
+//                kitInventory.setItem(CLAIM_KIT_SLOT, ItemUtil.createItem(new ItemStack(Material.YELLOW_CONCRETE), "<green>Click to claim the: <bold>" + kitName + "</bold> kit.", true, String.format("<white>Cooldown: %s", remainingTimeFormatted)));
+//            }
+//        } else {
+//            kitInventory.setItem(CLAIM_KIT_SLOT, ItemUtil.createItem(new ItemStack(Material.BARRIER), "<red>Exit", true));
+//        }
+//
+//        if (player.hasPermission("playerkitsplus.command.deletekit")) {
+//            kitInventory.setItem(DELETE_KIT_SLOT, ItemUtil.createItem(new ItemStack(Material.RED_CONCRETE), "<red>Click to delete the: <bold>" + kitName + "</bold> kit.", true, "<dark_red>WARNING: <red>You cannot undo this action!"));
+//        }
+//
+//        if (player.hasPermission("playerkitsplus.command.changetimer")) {
+//
+//            int oldCooldown =  plugin.getKitConfig().getInt("kit." + kitName + ".oldTimer");
+//            kitInventory.setItem(OLD_TIMER_SLOT, ItemUtil.createItem(new ItemStack(Material.OAK_SIGN), "<yellow>Old Timer: " + TimerUtils.formatRemainingTime(oldCooldown * 1000L), true));
+//
+//            int cooldown = plugin.getKitConfig().getInt("kit." + kitName + ".cooldown");
+//            kitInventory.setItem(CHANGE_TIMER_SLOT, ItemUtil.createItem(new ItemStack(Material.DARK_OAK_SIGN), "<green>Click to change the timer for the " + kitName + " kit.", true, "<white>Current timer: " + TimerUtils.formatRemainingTime(cooldown * 1000L)));
+//        }
+//
+//        setKit(player, kitName);
+//
+//        SoundUtil.sound(player, Sound.ENTITY_ITEM_PICKUP);
+//        player.openInventory(kitInventory);
+//        savePlayerToKit(player);
+//    }
 
     public static String getKit(Player player) {
         return kits.get(player.getUniqueId());
@@ -211,12 +317,20 @@ public class GuiManager {
         return deleteGuiOpened.contains(player.getUniqueId().toString());
     }
 
-    public static void openConfirmGui(Player player, String kit) {
+    public static void openConfirmGui(PlayerKitsPlus plugin, Player player, String kit) {
         // noinspection deprecation
         Inventory conformationInv = Bukkit.createInventory(player, 3 * 9, kit + " Delete Conformation");
 
+        Material backgroundMaterial = Material.BLACK_STAINED_GLASS_PANE;
+
+        String backgroundName = plugin.getConfig().getString("background");
+
+        if (backgroundName != null) {
+            backgroundMaterial = Material.valueOf(backgroundName);
+        }
+
         for (int i = 0; i < conformationInv.getSize(); i++) {
-            conformationInv.setItem(i, ItemUtil.createItem(new ItemStack(Material.BLACK_STAINED_GLASS_PANE), " ", false));
+            conformationInv.setItem(i, ItemUtil.createItem(new ItemStack(backgroundMaterial), " ", false));
         }
 
         conformationInv.setItem(DENY_DELETE, ItemUtil.createItem(new ItemStack(Material.RED_CONCRETE), "<red>Cancel", true));
