@@ -2,6 +2,7 @@ package me.zombieman.playerkitsplus.commands;
 
 import me.zombieman.playerkitsplus.PlayerKitsPlus;
 import me.zombieman.playerkitsplus.manager.KitManager;
+import me.zombieman.playerkitsplus.manager.PlayerDataManager;
 import me.zombieman.playerkitsplus.utils.SoundUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -9,6 +10,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,6 +46,24 @@ public class KitCmd implements CommandExecutor, TabCompleter {
             if (!player.hasPermission("playerkitsplus.command.kit." + kitName)) {
                 player.sendMessage(ChatColor.RED + "You don't have permission to use this kit.");
                 return false;
+            }
+
+            FileConfiguration kitConfig = plugin.getKitConfig();
+
+            if (kitConfig.getBoolean("kit." + kitName + ".isOneTimeUse")) {
+
+                List<String> isOneTimeUseKits = PlayerDataManager.getPlayerDataConfig(plugin, player.getUniqueId()).getStringList("isOneTimeUseKits");
+
+                if (isOneTimeUseKits.contains(kitName)) {
+                    player.sendMessage(ChatColor.RED + "You have already used this kit!");
+                    return false;
+                }
+
+                isOneTimeUseKits.add(kitName);
+
+                PlayerDataManager.getPlayerDataConfig(plugin, player.getUniqueId()).set("isOneTimeUseKits", isOneTimeUseKits);
+                PlayerDataManager.savePlayerData(plugin, player);
+
             }
 
             if (player.hasPermission("playerkitsplus.cooldown.bypass")) {

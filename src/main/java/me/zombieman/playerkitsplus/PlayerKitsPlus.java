@@ -43,6 +43,7 @@ public final class PlayerKitsPlus extends JavaPlugin {
         // Plugin startup logic
         this.saveDefaultConfig();
 
+
         String kitConfigFileName = "kit.yml";
         this.kitDataFile = new File(this.getDataFolder(), kitConfigFileName);
         if (!this.kitDataFile.exists()) this.saveResource(kitConfigFileName, false);
@@ -111,6 +112,7 @@ public final class PlayerKitsPlus extends JavaPlugin {
     public KitCmd getKidCmd() {
         return this.kitCmd;
     }
+
     public void reloadKitConfig() {
         kitConfig = YamlConfiguration.loadConfiguration(kitDataFile);
 

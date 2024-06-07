@@ -15,3 +15,4 @@ kit:
         type: STONE_AXE
     offhand: []
     cooldown: 0
+    isOneTimeUse: false

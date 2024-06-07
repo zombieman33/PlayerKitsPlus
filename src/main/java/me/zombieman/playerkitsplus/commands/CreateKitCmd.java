@@ -41,11 +41,29 @@ public class CreateKitCmd implements CommandExecutor, TabCompleter {
                 return false;
             }
 
-            if (args.length != 2) {
+            boolean isOneTimeUse = false;
+
+            if (!args[1].isEmpty()) {
+                try {
+                    isOneTimeUse = Boolean.parseBoolean(args[1]);
+                } catch (IllegalArgumentException e) {
+                    player.sendMessage(ChatColor.RED + "This is not a valid boolean. Usage: true/false");
+                    SoundUtil.sound(player, Sound.ENTITY_VILLAGER_NO);
+                    return false;
+                }
+            } else {
+                player.sendMessage(ChatColor.RED + "This is not a valid boolean. Usage: true/false");
+                SoundUtil.sound(player, Sound.ENTITY_VILLAGER_NO);
+                return false;
+            }
+
+            if (args.length != 3) {
                 player.sendMessage(ChatColor.RED + "You need to specify a time for the kit.");
                 return false;
             }
-            String timeStr = args[1];
+
+
+            String timeStr = args[2];
 
             int time = 0;
 
@@ -57,17 +75,19 @@ public class CreateKitCmd implements CommandExecutor, TabCompleter {
             }
 
             if (time < 0) {
-                player.sendMessage(ChatColor.RED +  "The timer can't be below 0.");
+                player.sendMessage(ChatColor.RED + "The timer can't be below 0.");
                 SoundUtil.sound(player, Sound.ENTITY_VILLAGER_NO);
                 return false;
             }
 
-            KitManager.savePlayerInventory(player, kitName, time, plugin);
+
+            KitManager.savePlayerInventory(player, kitName, time, isOneTimeUse, plugin);
 
             if (player.getInventory().isEmpty()) return false;
 
             player.sendMessage(ChatColor.GREEN + String.format("Created a new kit called '%s'", kitName));
             player.sendMessage(ChatColor.GREEN + String.format("Timer %s", TimerUtils.formatRemainingTime(time * 1000L)));
+            player.sendMessage(ChatColor.GREEN + "Is One Time Use: " + isOneTimeUse);
 
         } else {
             player.sendMessage(ChatColor.YELLOW + "/createkit <kit>");
@@ -85,11 +105,13 @@ public class CreateKitCmd implements CommandExecutor, TabCompleter {
             if (args.length == 1) {
                 completions.add("<kit name>");
             } else if (args.length == 2) {
+                completions.add("<is one time use>");
+            } else if (args.length == 3) {
                 completions.add("<time in seconds>");
             }
         }
 
         String lastArg = args[args.length - 1];
-        return completions.stream().filter(s -> s.startsWith(lastArg)).collect(Collectors.toList());
+        return completions.stream().filter(s -> s.startsWith(lastArg.toLowerCase())).collect(Collectors.toList());
     }
 }

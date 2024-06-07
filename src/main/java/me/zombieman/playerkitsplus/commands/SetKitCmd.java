@@ -41,7 +41,7 @@ public class SetKitCmd implements CommandExecutor, TabCompleter {
                 return false;
             }
 
-            KitManager.setKit(plugin, kitName, player);
+            KitManager.setKit(plugin, kitName, plugin.getKitConfig().getBoolean("kit." + kitName + ".isOneTimeUse"), player);
 
         } else {
             player.sendMessage(ChatColor.YELLOW + "/kit <kit>");

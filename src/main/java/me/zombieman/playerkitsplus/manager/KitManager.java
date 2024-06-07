@@ -26,7 +26,7 @@ public class KitManager {
         return false;
     }
 
-    public static void savePlayerInventory(Player player, String kitName, int cooldown, PlayerKitsPlus plugin) {
+    public static void savePlayerInventory(Player player, String kitName, int cooldown, boolean isOneTimeUse, PlayerKitsPlus plugin) {
         if (player.getInventory().isEmpty()) {
             player.sendMessage(ChatColor.RED + "You need to have items in your inventory to create a kit!");
             SoundUtil.sound(player, Sound.ENTITY_VILLAGER_NO);
@@ -42,11 +42,12 @@ public class KitManager {
 
         plugin.getKitConfig().set("kit." + kitName + ".items", itemsListBuilder.build());
         plugin.getKitConfig().set("kit." + kitName + ".cooldown", cooldown);
+        plugin.getKitConfig().set("kit." + kitName + ".isOneTimeUse", isOneTimeUse);
         plugin.saveKitConfig();
     }
 
 
-    public static void setKit(PlayerKitsPlus plugin, String kitName, Player player) {
+    public static void setKit(PlayerKitsPlus plugin, String kitName, boolean isOneTimeUse, Player player) {
         FileConfiguration kitConfig = plugin.getKitConfig();
 
         int cooldown = kitConfig.getInt("kit." + kitName + ".cooldown");
@@ -55,7 +56,7 @@ public class KitManager {
 
         plugin.saveKitConfig();
 
-        savePlayerInventory(player, kitName, cooldown, plugin);
+        savePlayerInventory(player, kitName, cooldown, isOneTimeUse, plugin);
 
         if (player.getInventory().isEmpty()) return;
 
