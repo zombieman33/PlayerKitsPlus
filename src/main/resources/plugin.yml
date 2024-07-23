@@ -17,6 +17,7 @@ commands:
     permission: playerkitsplus.command.changetimer
   setkit:
     permission: playerkitsplus.command.setkit
+  forcekit:
 
 permissions:
   playerkitsplus.command.createkit:

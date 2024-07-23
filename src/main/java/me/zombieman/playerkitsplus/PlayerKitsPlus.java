@@ -31,6 +31,7 @@ public final class PlayerKitsPlus extends JavaPlugin {
     private ResetPlayerKitCooldownCmd resetPlayerKitCooldownCmd;
     private ChangeTimerCmd changeTimerCmd;
     private SetKitCmd setKitCmd;
+    private ForceKitCmd forceKitCmd;
 
     // Listeners
     private JoinListener joinListener;
@@ -80,6 +81,10 @@ public final class PlayerKitsPlus extends JavaPlugin {
         PluginCommand plSetKitCmd = this.getCommand("setkit");
         this.setKitCmd = new SetKitCmd(this);
         if (plSetKitCmd != null) plSetKitCmd.setExecutor(this.setKitCmd);
+
+        PluginCommand plForceKitCmd = this.getCommand("forcekit");
+        this.forceKitCmd = new ForceKitCmd(this);
+        if (plForceKitCmd != null) plForceKitCmd.setExecutor(this.forceKitCmd);
 
         // Managers
         new KitManager();

@@ -85,7 +85,7 @@ public class KitManager {
                 if (currentTime < cooldownTime) {
                     long remainingTimeMillis = cooldownTime - currentTime;
                     String remainingTimeFormatted = TimerUtils.formatRemainingTime(remainingTimeMillis);
-                    player.sendMessage(ChatColor.RED + "You must wait " + remainingTimeFormatted + " before using this kit again.");
+                    player.sendMessage(ChatColor.RED + "You must wait " + ChatColor.YELLOW + remainingTimeFormatted + ChatColor.RED + " before using this kit again.");
                     return;
                 }
             }
